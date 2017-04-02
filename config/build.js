@@ -14,6 +14,8 @@ let main = fs
 
 fs.writeFileSync('src/index.js', main);
 
+console.log("Building...");
+
 rollup.rollup({
           entry: 'src/index.js',
           plugins: [
@@ -58,6 +60,8 @@ rollup.rollup({
               format: 'es',
               dest: 'dist/' + pack.name + '.js',
           });
+
+          console.log("Done")
       })
       .catch(function logError(e) {
           console.log(e)

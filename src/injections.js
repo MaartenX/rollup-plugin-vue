@@ -11,7 +11,7 @@ function findInjectionPosition (script) {
 
     const name = hasDefaultExportReference[2].replace('$', '\\$')
 
-    return (new RegExp(`(${name}[\\s]=[^{]*\\{)`, 'g')).exec(script)
+    return new RegExp('export default (' + name + ")", 'g').exec(script);
 }
 
 export function templateJs (script, template, lang, id, options, modules) {
@@ -20,7 +20,7 @@ export function templateJs (script, template, lang, id, options, modules) {
     const matches = findInjectionPosition(script)
 
     if (matches && matches.length) {
-        return script.split(matches[1]).join(`${matches[1]} template: ${JSON.stringify(template)},`)
+        return script.split(matches[0]).join(`${matches[1]}.options.template = ${JSON.stringify(template)};\n${matches[0]}`);
     }
 
     throw new Error(
@@ -49,7 +49,9 @@ export function renderJs (script, render, lang, id, options) {
             renderScript = transpileVueTemplate(renderScript, options.vue)
         }
 
-        return script.split(matches[1]).join(renderScript.replace('module.exports={', 'export default {').replace(/\}$/, ''))
+        const props = /module\.exports=(.*)$/.exec(renderScript)[1];
+
+        return script.split(matches[0]).join(`var props=${props};\nfor (var p in props) { ${matches[1]}.options[p] = props[p]; }\n${matches[0]}`);
     }
 
     throw new Error(
@@ -62,9 +64,7 @@ export function moduleJs (script, modules, lang, id, options) {
     const matches = findInjectionPosition(script)
 
     if (matches && matches.length) {
-        const moduleScript = `${matches[1]}cssModules: ${JSON.stringify(modules)},`
-
-        return script.split(matches[1]).join(moduleScript)
+        return script.split(matches[0]).join(`${matches[1]}.options.cssModules = ${JSON.stringify(modules)};\n${matches[0]}`);
     }
 
     throw new Error(

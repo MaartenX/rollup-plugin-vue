@@ -48,7 +48,7 @@ export default function vue (opts = {}) {
             if (id.indexOf('.vue.component.') < 0) return null
 
             const parts = id.split('.')
-            const component = parts.slice(0, parts.length - 4).join('.')
+            const component = parts.slice(0, parts.length - 4).join('.').slice(1);
             const index = parseInt(parts[parts.length - 4])
 
             if (index < styles[component].length) return styles[component][index]

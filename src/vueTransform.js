@@ -69,7 +69,7 @@ async function processScript (source, id, content, options, nodes, modules) {
     const template = await processTemplate(nodes.template[0], id, content, options, nodes, modules)
 
     debug(`Process script: ${id}`)
-    const lang = 'js'
+    const lang = 'js';
 
     if (source.attrs.lang && ['js', 'babel'].indexOf(source.attrs.lang) < 0) {
         if (!(source.attrs.lang in options.script)) {
@@ -187,7 +187,7 @@ export default async function vueTransform (code, id, options) {
     }
 
     if (options.styleToImports === true) {
-        const style = css.map((s, i) => 'import ' + JSON.stringify(`${id}.${i}.vue.component.${s.lang}`) + ';').join(' ')
+        const style = css.map((s, i) => 'import ' + JSON.stringify(`\0${id}.${i}.vue.component.${s.lang}`) + ';').join(' ')
 
         return { css, code: style + js.code, map: js.map }
     } else if (options.css === true) {
